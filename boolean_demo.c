@@ -41,7 +41,59 @@ int main() {
     randInit(nn);
     nn->train = true;
 
-    for (int i = 0; i < 100000; i++) {
+    printf("Initial (random) Evaluations:\n");
+    for (int i = 0; i < 5; i++) {
+        printf("\n");
+
+        Tensor** xy = genData();
+        copyTensor(xy[0], nn->input);
+        forwardPass(nn);
+
+        printf("Input: ");
+        printTensor(xy[0], false);
+        printf("Output: ");
+        printTensor(nn->output, false);
+        printf("Correct Output: ");
+        printTensor(xy[1], false);
+    }
+
+    int batches = 100000;
+    int batchSize = 4;
+
+    printf("\n---------------------\nTraining for %d batches\n---------------------\n\n", batches);
+
+    printf("Press any key to begin training\n");
+    getchar();
+
+    for (int i = 0; i < batches; i++) {
+        Tensor** xy = genData();
+        copyTensor(xy[0], nn->input);
+
+        if (i % 1000 == 0) {
+            printf("Batches complete: %d/%d\n", i, batches);
+        }
+
+        freeTensor(xy[0]); freeTensor(xy[1]); free(xy);
+
+        // Train on batch
+        Tensor** batch[batchSize];
+        for (int b = 0; b < batchSize; b++) batch[b] = genData();
+
+        batchTrain(nn, batch, batchSize, 1.0);
+
+
+        for (int b = 0; b < batchSize; b++) {
+            freeTensor(batch[b][0]); freeTensor(batch[b][1]); free(batch[b]);
+        }
+
+    }
+
+    printf("\n---------------------\nTraining complete\n---------------------\n\n");
+
+    printf("Example Evaluations:\n");
+    for (int i = 0; i < 5; i++) {
+        printf("\n");
+
         Tensor** xy = genData();
         copyTensor(xy[0], nn->input);
 
@@ -52,20 +104,6 @@ int main() {
         printTensor(nn->output, false);
         printf("Correct Output: ");
         printTensor(xy[1], false);
-
-        freeTensor(xy[0]); freeTensor(xy[1]); free(xy);
-
-        // Train on batch
-        Tensor** batch[16];
-        for (int b = 0; b < 16; b++) batch[b] = genData();
-
-        batchTrain(nn, batch, 16, 1);
-
-
-        for (int b = 0; b < 16; b++) {
-            freeTensor(batch[b][0]); freeTensor(batch[b][1]); free(batch[b]);
-        }
-
     }
 
 
