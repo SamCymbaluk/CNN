@@ -83,7 +83,7 @@ void forwardPass(NeuralNet* nn) {
         add(nn->layers[n], nn->biases[n - 1], nn->layers[n]);
 
         // Store pre-activation values in z
-        if (nn->train) copyTensor(nn->layers[n], nn->layers[n]);
+        if (nn->train) copyTensor(nn->layers[n], nn->zs[n]);
 
         // A_n = sigmoid (A_N)
         if (n == nn->depth - 1) {
@@ -135,7 +135,6 @@ Tensor*** backProp(NeuralNet *nn, Tensor* yTrue) {
     Tensor* z = dupeTensor(nn->zs[layers - 1]);
     sigmoid_prime(z);
     mult(bDeltas[layers - 2], z, bDeltas[layers - 2]);
-    freeTensor(z);
 
     // delZ / delW
     Tensor* a = dupeTensor(nn->layers[layers - 2]);
