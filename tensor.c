@@ -28,28 +28,36 @@ void freeTensor(Tensor* tensor) {
     free(tensor);
 }
 
-void copyTensor(Tensor* src, Tensor* dest) {
-    if (src->rank == dest->rank) {
-        for (unsigned int n = 0; n < src->rank; n++) {
-            if (src->shape[n] != dest->shape[n]) exit(100);
+bool shapeMatches(const Tensor* a, const Tensor* b) {
+    if (a->rank != b->rank) {
+        return false;
+    }
+
+    for (int i = 0; i < a->rank; i++) {
+        if(a->shape[i] != b->shape[i]) {
+            return false;
         }
+    }
+
+    return true;
+}
+
+
+void copyTensor(Tensor* src, Tensor* dest) {
+    if (shapeMatches(src, dest)) {
 
         for (size_t e = 0; e < src->size; e++) {
             dest->data[e] = src->data[e];
         }
 
-
     } else {
+        fprintf(stderr, "Shape of tensors for copyTensor are incompatible\n");
         exit(100);
     }
 }
 
 Tensor* dupeTensor(Tensor* src) {
-    // printf("Tensor: %p\n", src);
     Tensor* dest = newTensor(src->rank, src->shape);
-
-    // printf("DupeTest\n");
-
     copyTensor(src, dest);
 
     return dest;
@@ -73,12 +81,6 @@ float* getElement(Tensor* tensor, const unsigned int* index) {
     return ptr;
 }
 
-/**
- * Return size of subtensor in floats
- * @param tensor
- * @param dimensions number of dimensions in subtensor starting from the last dimension
- * @return
- */
 size_t subtensorSize(const Tensor* tensor, unsigned int dimensions) {
     if (dimensions == tensor->rank) return tensor->size;
 
@@ -96,24 +98,10 @@ void fnApply(Tensor* tensor, float (*func)(float)) {
     }
 }
 
-
-/**
- * Adds tensors a and b together and stores in c
- * c = a + b
- * @param a
- * @param b
- * @param c
- */
 void add(const Tensor* a, const Tensor* b, Tensor* c) {
-    int rank = a->rank;
 
-    bool shapesValid = rank == b->rank && rank == c->rank;
+    if (shapeMatches(a, b) && shapeMatches(b, c)) {
 
-    for (int i = 0; i < rank; i++) {
-        shapesValid = shapesValid && a->shape[i] == b->shape[i] && b->shape[i] == c->shape[i];
-    }
-
-    if (shapesValid) {
         for (size_t i = 0; i < a->size; i++) {
             c->data[i] = a->data[i] + b->data[i];
         }
@@ -124,24 +112,10 @@ void add(const Tensor* a, const Tensor* b, Tensor* c) {
     }
 }
 
-/**
- * Subtracts tensor b from a and stores in c
- * c = a - b
- * @param a
- * @param b
- * @param c
- */
 void sub(const Tensor* a, const Tensor* b, Tensor* c) {
-    int rank = a->rank;
 
-    bool shapesValid = rank == b->rank && rank == c->rank;
+    if (shapeMatches(a, b) && shapeMatches(b, c)) {
 
-    for (int i = 0; i < rank; i++) {
-        // printf("%d, %d, %d\n", a->shape[i], b->shape[i], c->shape[i]);
-        shapesValid = shapesValid && a->shape[i] == b->shape[i] && b->shape[i] == c->shape[i];
-    }
-
-    if (shapesValid) {
         for (size_t i = 0; i < a->size; i++) {
             c->data[i] = a->data[i] - b->data[i];
         }
@@ -152,24 +126,10 @@ void sub(const Tensor* a, const Tensor* b, Tensor* c) {
     }
 }
 
-/**
- * Perform element-wise multiplication
- * c = a * b
- * @param a
- * @param b
- * @param c
- */
 void mult(const Tensor* a, const Tensor* b, Tensor* c) {
-    int rank = a->rank;
 
-    bool shapesValid = rank == b->rank && rank == c->rank;
+    if (shapeMatches(a, b) && shapeMatches(b, c)) {
 
-    for (int i = 0; i < rank; i++) {
-        // printf("mult %d, %d, %d\n", a->shape[i], b->shape[i], c->shape[i]);
-        shapesValid = shapesValid && a->shape[i] == b->shape[i] && b->shape[i] == c->shape[i];
-    }
-
-    if (shapesValid) {
         for (size_t i = 0; i < a->size; i++) {
             c->data[i] = a->data[i] * b->data[i];
         }
@@ -186,15 +146,6 @@ void scalarmult(Tensor* a, float x) {
     }
 }
 
-/**
- * Multiple matrices a and b and store in c
- * a b c must be distinct
- * c = ab
- * @param a
- * @param b
- * @param c
- * @return
- */
 void matmul(const Tensor* a, const Tensor* b, Tensor* c) {
     int rank = a->rank;
 
@@ -205,14 +156,9 @@ void matmul(const Tensor* a, const Tensor* b, Tensor* c) {
         shapesValid = shapesValid && a->shape[i] == b->shape[i] && b->shape[i] == c->shape[i];
     }
 
-    // printf("matmul %d %d %d\n", a->shape[0], b->shape[0], c->shape[0]);
-    // printf("matmul %d %d %d\n", a->shape[1], b->shape[1], c->shape[1]);
-
     // Assert shape for final two dims is correct
     shapesValid = shapesValid && a->shape[rank - 1] == b->shape[rank - 2];
-            
     shapesValid = shapesValid && c->shape[rank - 2] == a->shape[rank - 2];
-
     shapesValid = shapesValid && c->shape[rank - 1] == b->shape[rank - 1];
 
     if (shapesValid) {
@@ -260,24 +206,21 @@ void matmul(const Tensor* a, const Tensor* b, Tensor* c) {
     }
 }
 
-/**
- * Return a new tensor with matrices transposed
- * @return
- */
 Tensor* transpose(Tensor* a) {
     unsigned int rank = a->rank;
 
-    unsigned int newShape[rank];
-
-    for (int i = 0; i < rank - 2; i++) {
-        newShape[i] = a->shape[i];
-    }
-    newShape[rank - 2] = a->shape[rank - 1];
-    newShape[rank - 1] = a->shape[rank - 2];
-
-    Tensor* new = newTensor(rank, newShape);
-
     if (rank >= 2) {
+
+        unsigned int newShape[rank];
+
+        for (int i = 0; i < rank - 2; i++) {
+            newShape[i] = a->shape[i];
+        }
+        newShape[rank - 2] = a->shape[rank - 1];
+        newShape[rank - 1] = a->shape[rank - 2];
+
+        Tensor* new = newTensor(rank, newShape);
+
 
         // Calculate the total matrices in the tensor
         unsigned int totalMatrices = 1;
@@ -310,18 +253,11 @@ Tensor* transpose(Tensor* a) {
         exit(100);
     }
 }
-/**
- * Take element-wise sigmoid of a tensor
- * @param a
- */
+
 void sigmoid(Tensor* a) {
     fnApply(a, fnSigmoid);
 }
 
-/**
- * Take element-wise sigmoid_prime of a tensor
- * @param a
- */
 void sigmoid_prime(Tensor* a) {
     fnApply(a, fnSigmoidPrime);
 }
