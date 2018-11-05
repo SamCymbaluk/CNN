@@ -2,6 +2,7 @@
 #include <time.h>
 #include "tensor.h"
 #include "neuralnet.h"
+#include "plot_util.h"
 
 /**
  * Gen XOR data
@@ -30,7 +31,14 @@ Tensor** genData() {
     return xy;
 }
 
+float cost(NeuralNet* nn, Tensor* ytrue) {
+    float c = 0;
+    for (int i = 0; i < nn->output->size; i++) {
+        c += (ytrue->data[i] - nn->output->data[i]) * (ytrue->data[i] - nn->output->data[i]);
+    }
 
+    return c;
+}
 
 int main() {
     srand(time(NULL));
@@ -59,18 +67,26 @@ int main() {
 
     int batches = 100000;
     int batchSize = 4;
+    int plotInterval = 1000;
 
+    // Plot info
+    char* plotTitle = "Network Loss";
+    float losses[batches / plotInterval];
+    
     printf("\n---------------------\nTraining for %d batches\n---------------------\n\n", batches);
 
     printf("Press any key to begin training\n");
     getchar();
-
+     
+  
     for (int i = 0; i < batches; i++) {
         Tensor** xy = genData();
         copyTensor(xy[0], nn->input);
+        forwardPass(nn);
 
-        if (i % 1000 == 0) {
+        if (i % plotInterval == 0) {
             printf("Batches complete: %d/%d\n", i, batches);
+            losses[i / plotInterval - 1] = cost(nn, xy[1]);
         }
 
         freeTensor(xy[0]); freeTensor(xy[1]); free(xy);
@@ -79,7 +95,7 @@ int main() {
         Tensor** batch[batchSize];
         for (int b = 0; b < batchSize; b++) batch[b] = genData();
 
-        batchTrain(nn, batch, batchSize, 1.0);
+        batchTrain(nn, batch, batchSize, 0.1);
 
 
         for (int b = 0; b < batchSize; b++) {
@@ -87,7 +103,8 @@ int main() {
         }
 
     }
-
+    
+    plotMetric(plotTitle, 0, 2, losses, 100);
     printf("\n---------------------\nTraining complete\n---------------------\n\n");
 
     printf("Example Evaluations:\n");
@@ -105,7 +122,7 @@ int main() {
         printf("Correct Output: ");
         printTensor(xy[1], false);
     }
-
-
+    
+    getchar();
 }
 
