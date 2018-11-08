@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "tensor.h"
 #include "neuralnet.h"
 
 /**
@@ -10,7 +9,7 @@
  * @param shape Array of length 'depth' that specifies the size of each layer
  * @return
  */
-NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape) {
+NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape, LossFunction* lossFunction) {
     NeuralNet* nn = malloc(sizeof(NeuralNet));
 
     nn->depth = depth;
@@ -45,6 +44,8 @@ NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape) {
 
     nn->input = nn->layers[0];
     nn->output = nn->layers[depth - 1];
+
+    nn->lossFunction = lossFunction;
 
     return nn;
 }
@@ -127,9 +128,8 @@ Tensor*** backProp(NeuralNet *nn, Tensor* yTrue) {
     // delCost / delBias = (delCost / delA) * (delA / delZ) * (delZ / delW) = a_(L - 1) * simoid'(z) * 2(A_L - y)
 
     // delCost / delA
-    // Derivative of MSE = (y -  ytrue)^2 cost function is 2 * (y - ytrue)
-    // For efficiency, we can drop the scalar
-    sub(nn->layers[layers - 1], yTrue, bDeltas[layers - 2]);
+    // Derivative of loss function
+    nn->lossFunction->lossDerivative(nn->layers[layers - 1], yTrue, bDeltas[layers - 2]);
 
     // delA / delZ
     Tensor* z = dupeTensor(nn->zs[layers - 1]);

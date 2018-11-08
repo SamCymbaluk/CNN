@@ -2,6 +2,7 @@
 #include <time.h>
 #include "tensor.h"
 #include "neuralnet.h"
+#include "loss_functions.h"
 
 /**
  * Gen XOR data
@@ -30,21 +31,12 @@ Tensor** genData() {
     return xy;
 }
 
-float cost(NeuralNet* nn, Tensor* ytrue) {
-    float c = 0;
-    for (int i = 0; i < nn->output->size; i++) {
-        c += (ytrue->data[i] - nn->output->data[i]) * (ytrue->data[i] - nn->output->data[i]);
-    }
-
-    return c;
-}
-
 int main() {
     srand(time(NULL));
 
     // Initialize neural network
     unsigned int nnShape[] = {2, 10, 10, 2};
-    NeuralNet* nn = newNeuralNet(4, nnShape);
+    NeuralNet* nn = newNeuralNet(4, nnShape, MeanSquaredError);
     randInit(nn);
     nn->train = true;
 

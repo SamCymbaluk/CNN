@@ -1,7 +1,3 @@
-//
-// Created by ukssp on 2018-10-22.
-//
-
 #ifndef PROJECT_FUNCTIONS_H
 #define PROJECT_FUNCTIONS_H
 
