@@ -2,7 +2,6 @@
 #include <time.h>
 #include "tensor.h"
 #include "neuralnet.h"
-#include "plot_util.h"
 
 /**
  * Gen XOR data
@@ -68,10 +67,6 @@ int main() {
     int batches = 100000;
     int batchSize = 4;
     int plotInterval = 1000;
-
-    // Plot info
-    char* plotTitle = "Network Loss";
-    float losses[batches / plotInterval];
     
     printf("\n---------------------\nTraining for %d batches\n---------------------\n\n", batches);
 
@@ -86,7 +81,6 @@ int main() {
 
         if (i % plotInterval == 0) {
             printf("Batches complete: %d/%d\n", i, batches);
-            losses[i / plotInterval - 1] = cost(nn, xy[1]);
         }
 
         freeTensor(xy[0]); freeTensor(xy[1]); free(xy);
@@ -103,8 +97,6 @@ int main() {
         }
 
     }
-    
-    plotMetric(plotTitle, 0, 2, losses, 100);
     printf("\n---------------------\nTraining complete\n---------------------\n\n");
 
     printf("Example Evaluations:\n");
@@ -122,7 +114,7 @@ int main() {
         printf("Correct Output: ");
         printTensor(xy[1], false);
     }
-    
+
     getchar();
 }
 
