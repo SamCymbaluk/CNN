@@ -20,6 +20,9 @@ tensor.o: tensor.c tensor.h functions.o
 functions.o: functions.c functions.h
 	gcc $(CFLAGS) -c functions.c
 
+dataset.o: dataset.c dataset.h
+	gcc $(CFLAGS) -c dataset.c
+
 clean:
 	rm -rf *.o ||:
 	rm -rf boolean_demo test ||:
