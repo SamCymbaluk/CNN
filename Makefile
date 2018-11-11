@@ -1,9 +1,15 @@
 CFLAGS = "-std=c99"
 
-all: boolean_demo
+all: boolean_demo mnist_demo
 
-boolean_demo: boolean_demo.o tensor.o neuralnet.o functions.o loss_functions.o
-	gcc -o boolean_demo boolean_demo.o tensor.o neuralnet.o functions.o loss_functions.o -lm
+mnist_demo: mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o
+	gcc -o mnist_demo mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o -lm
+
+mnist_demo.o: mnist_demo.c
+	gcc $(CFLAGS) -c mnist_demo.c
+
+boolean_demo: boolean_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o
+	gcc -o boolean_demo boolean_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o -lm
 
 boolean_demo.o: boolean_demo.c
 	gcc $(CFLAGS) -c boolean_demo.c
@@ -19,6 +25,9 @@ tensor.o: tensor.c tensor.h functions.o
 
 functions.o: functions.c functions.h
 	gcc $(CFLAGS) -c functions.c
+
+mnist_dataset.o: mnist_dataset.c mnist_dataset.h dataset.o
+	gcc $(CFLAGS) -c mnist_dataset.c
 
 dataset.o: dataset.c dataset.h
 	gcc $(CFLAGS) -c dataset.c

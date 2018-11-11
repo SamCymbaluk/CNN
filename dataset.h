@@ -14,10 +14,10 @@ typedef struct Datum Datum;
 
 struct Dataset {
     size_t trainElements;
-    Datum* (*getTrainElement)(size_t);
+    Datum (*getTrainElement)(size_t);
 
     size_t testElements;
-    Datum* (*getTestElement)(size_t);
+    Datum (*getTestElement)(size_t);
 };
 
 typedef struct Dataset Dataset;

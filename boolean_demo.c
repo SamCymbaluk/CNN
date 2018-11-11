@@ -3,6 +3,7 @@
 #include "tensor.h"
 #include "neuralnet.h"
 #include "loss_functions.h"
+#include "mnist_dataset.h"
 
 /**
  * Gen XOR data

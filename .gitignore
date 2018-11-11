@@ -2,4 +2,6 @@
 cmake-build-debug
 *.o
 test
+
 boolean_demo
+mnist_demo
