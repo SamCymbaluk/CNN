@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 3.12)
-file(GLOB_RECURSE APP_SOURCES *.c)
-foreach(testsourcefile ${APP_SOURCES})
-    get_filename_component(testname ${testsourcefile} NAME_WE)
-    add_executable(${testname} ${testsourcefile})
-endforeach(testsourcefile ${APP_SOURCES})

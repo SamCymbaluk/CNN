@@ -1,7 +1,9 @@
 .idea
 cmake-build-debug
+CMakeLists.txt
 *.o
 *.so
+
 
 xor_demo
 mnist_demo
