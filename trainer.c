@@ -86,8 +86,8 @@ void train(NeuralNet* nn, Optimizer optimizer, Dataset dataset,
     }
 
     freeWeightBiasUpdate(nn, datumWBUpdate);
+    freeWeightBiasUpdate(nn, batchWBUpdate);
     freeWeightBiasUpdate(nn, epochWBUpdate);
-    freeWeightBiasUpdate(nn, datumWBUpdate);
 }
 
 void printEpochCallback(TrainingInfo trainingInfo) {

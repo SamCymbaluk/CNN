@@ -60,5 +60,20 @@ int main() {
     };
 
     train(nn, SGD, xorDataset, 50, 4, 0.1, printEpochCallback);
+
+
+    for (size_t i = 0; i < 4; i++) {
+        Datum datum = xorDataset.getTestElement(i);
+        copyTensor(datum.x, nn->input);
+        forwardPass(nn);
+        printf("Input:           ");
+        printTensor(datum.x, false);
+        printf("Expected Output: ");
+        printTensor(datum.y, false);
+        printf("Network Output:  ");
+        printTensor(nn->output, false);
+        printf("Correct:         %s\n\n", MeanSquaredError.correct(datum.y, nn->output) ? "true" : "false");
+
+    }
 }
 
