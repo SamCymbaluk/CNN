@@ -9,7 +9,7 @@
  * @param shape Array of length 'depth' that specifies the size of each layer
  * @return
  */
-NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape, LossFunction* lossFunction) {
+NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape, LossFunction lossFunction) {
     NeuralNet* nn = malloc(sizeof(NeuralNet));
 
     nn->depth = depth;
@@ -95,41 +95,72 @@ void forwardPass(NeuralNet* nn) {
     }
 }
 
-/**
- *
- * @param n
- * @param yTrue
- * @return [[weightsDelta], [biasesDelta]]
- */
-Tensor*** backProp(NeuralNet *nn, Tensor* yTrue) {
+Tensor*** newWeightBiasUpdate(NeuralNet* nn) {
     unsigned int layers = nn->depth;
 
     Tensor*** wb = calloc(2, sizeof(Tensor**));
 
     wb[0] = calloc(layers - 1, sizeof(Tensor*));
     wb[1] = calloc(layers - 1, sizeof(Tensor*));
-    Tensor** wDeltas = wb[0];
-    Tensor** bDeltas = wb[1];
 
     unsigned int layerShape[2];
 
     for (int i = 0; i < layers - 1; i++) {
         layerShape[0] = nn->shape[i + 1]; layerShape[1] = 1;
         // Biases
-        bDeltas[i] = newTensor(2, layerShape);
+        wb[1][i] = newTensor(2, layerShape);
 
         // Weights
         unsigned int weightShape[2];
         weightShape[0] = nn->shape[i + 1]; weightShape[1] = nn->shape[i];
-        wDeltas[i] = newTensor(2, weightShape);
+        wb[0][i] = newTensor(2, weightShape);
     }
+
+    return wb;
+}
+
+void scaleWeightBiasUpdate(NeuralNet* nn, Tensor*** wb, float scalar) {
+    for (int i = 0; i < nn->depth - 1; i++) {
+        scalarmult(wb[0][i], scalar);
+        scalarmult(wb[1][i], scalar);
+    }
+}
+
+void copyWeightBiasUpdate(NeuralNet* nn, Tensor*** src, Tensor*** dest) {
+    for (int i = 0; i < nn->depth - 1; i++) {
+        copyTensor(src[0][i], dest[0][i]);
+        copyTensor(src[1][i], dest[1][i]);
+    }
+}
+
+void addWeightBiasUpdate(NeuralNet* nn, Tensor*** a, Tensor*** b, Tensor*** c) {
+    for (int i = 0; i < nn->depth - 1; i++) {
+        add(a[0][i], b[0][i], c[0][i]);
+        add(a[1][i], b[1][i], c[1][i]);
+    }
+}
+
+void freeWeightBiasUpdate(NeuralNet* nn, Tensor*** wb) {
+    for (int i = 0; i < nn->depth - 1; i++) {
+        freeTensor(wb[0][i]);
+        freeTensor(wb[1][i]);
+    }
+    free(wb[0]); free(wb[1]);
+    free(wb);
+}
+
+void backProp(NeuralNet* nn, Tensor*** wb, Tensor* yTrue) {
+    unsigned int layers = nn->depth;
+
+    Tensor** wDeltas = wb[0];
+    Tensor** bDeltas = wb[1];
 
     // delCost / delBias = (delCost / delA) * (delA / delZ) = simoid'(z) * 2(A_L - y)
     // delCost / delBias = (delCost / delA) * (delA / delZ) * (delZ / delW) = a_(L - 1) * simoid'(z) * 2(A_L - y)
 
     // delCost / delA
     // Derivative of loss function
-    nn->lossFunction->lossDerivative(nn->layers[layers - 1], yTrue, bDeltas[layers - 2]);
+    nn->lossFunction.lossDerivative(nn->layers[layers - 1], yTrue, bDeltas[layers - 2]);
 
     // delA / delZ
     Tensor* z = dupeTensor(nn->zs[layers - 1]);
@@ -160,39 +191,6 @@ Tensor*** backProp(NeuralNet *nn, Tensor* yTrue) {
 
         freeTensor(z); freeTensor(w); freeTensor(wt); freeTensor(a); freeTensor(at);
     }
-
-    return wb;
-}
-
-void batchTrain(NeuralNet *nn, Tensor** xy[], int batchSize, float lr) {
-
-    copyTensor(xy[0][0], nn->input);
-    forwardPass(nn);
-
-    Tensor*** wb = backProp(nn, xy[0][1]);
-
-    // Aggregate back prop results for batch
-    for (int b = 1; b < batchSize; b++) {
-        copyTensor(xy[b][0], nn->input);
-        forwardPass(nn);
-
-        Tensor*** delWb = backProp(nn, xy[b][1]);
-
-        for (int i = 0; i < nn->depth - 1; i++) {
-            add(wb[0][i], delWb[0][i], wb[0][i]);
-            add(wb[1][i], delWb[1][i], wb[1][i]);
-        }
-
-        freeBackProp(nn, delWb);
-    }
-
-    // Take average
-    for (int i = 0; i < nn->depth - 1; i++) {
-        scalarmult(wb[0][i], 1.0f / batchSize);
-        scalarmult(wb[1][i], 1.0f / batchSize);
-    }
-
-   applyBackProp(nn, wb, lr);
 }
 
 void applyBackProp(NeuralNet* nn, Tensor*** wb, float lr) {
@@ -204,16 +202,4 @@ void applyBackProp(NeuralNet* nn, Tensor*** wb, float lr) {
         add(nn->weights[i], wb[0][i], nn->weights[i]);
         add(nn->biases[i], wb[1][i], nn->biases[i]);
     }
-
-    freeBackProp(nn, wb);
-
-}
-
-void freeBackProp(NeuralNet* nn, Tensor*** wb) {
-    for (int i = 0; i < nn->depth - 1; i++) {
-        freeTensor(wb[0][i]);
-        freeTensor(wb[1][i]);
-    }
-    free(wb[0]); free(wb[1]);
-    free(wb);
 }

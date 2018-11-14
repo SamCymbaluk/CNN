@@ -52,6 +52,15 @@ void copyTensor(Tensor* src, Tensor* dest);
 Tensor* dupeTensor(Tensor* src);
 
 /**
+ * Returns true if the two Tensors are equal in shape and data
+ * @param a
+ * @param b
+ * @param epsilon The minimum tolerable difference on a single element
+ * @return
+ */
+bool tensorEqual(Tensor* a, Tensor* b, float epsilon);
+
+/**
  * Populate all elements in a tensor with elements in the range [min, max)
  * @param tensor The Tensor to randomly populate
  * @param min The minimum value
@@ -131,6 +140,13 @@ void scalarmult(Tensor* a, float x);
  * @param c
  */
 void matmul(const Tensor* a, const Tensor* b, Tensor* c);
+
+/**
+ * Return the flattened index of the Tensor element of greatest value
+ * @param a Tensor
+ * @return Flattened index
+ */
+size_t argmax(Tensor* a);
 
 /**
  * Construct a new matrix consisting of the transposes of the the matrices in the given Tensor

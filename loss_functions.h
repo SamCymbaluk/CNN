@@ -1,6 +1,7 @@
 #ifndef PROJECT_LOSS_FUNCTIONS_H
 #define PROJECT_LOSS_FUNCTIONS_H
 
+#include <stdbool.h>
 #include "tensor.h"
 
 struct LossFunction {
@@ -8,10 +9,12 @@ struct LossFunction {
     float (*loss)(Tensor*, Tensor*);
     // Element-wise loss derivative. Takes ypred, ytrue, dest
     void (*lossDerivative)(Tensor*, Tensor*, Tensor*);
+    // Returns true if network prediction matches ground truth. Takes ypred, ytrue
+    bool (*correct)(Tensor*, Tensor*);
 };
 
 typedef struct LossFunction LossFunction;
 
-extern LossFunction* MeanSquaredError;
+extern LossFunction MeanSquaredError;
 
 #endif //PROJECT_LOSS_FUNCTIONS_H

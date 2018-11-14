@@ -1,8 +1,11 @@
 #include <stdbool.h>
+#include <time.h>
 #include "mnist_dataset.h"
 
 #define IMAGE_SIZE 784
 
+    size_t trainSize;
+    size_t testSize;
     Datum* trainData;
     Datum* testData;
 
@@ -101,6 +104,16 @@ Datum getTestElement(size_t element) {
     return testData[element];
 }
 
+void shuffle() {
+    size_t i;
+    for (i = trainSize - 1; i > 0; i--) {
+        size_t j = (unsigned int) (rand()*(i+1));
+        Datum t = trainData[j];
+        trainData[j] = trainData[i];
+        trainData[i] = t;
+    }
+}
+
 
 Dataset MNIST(char* trainImages, char* trainLabels, char* testImages, char* testLabels) {
     Tensor** trainX;
@@ -108,8 +121,8 @@ Dataset MNIST(char* trainImages, char* trainLabels, char* testImages, char* test
     Tensor** testX;
     Tensor** testY;
 
-    size_t trainSize = loadImages(trainImages, &trainX);
-    size_t testSize = loadImages(testImages, &testX);
+    trainSize = loadImages(trainImages, &trainX);
+    testSize = loadImages(testImages, &testX);
     loadLabels(trainLabels, &trainY);
     loadLabels(testLabels, &testY);
 
@@ -123,7 +136,8 @@ Dataset MNIST(char* trainImages, char* trainLabels, char* testImages, char* test
         .trainElements = trainSize,
         .getTrainElement = getTrainElement,
         .testElements = testSize,
-        .getTestElement = getTestElement
+        .getTestElement = getTestElement,
+        .shuffle = shuffle
     };
 }
 

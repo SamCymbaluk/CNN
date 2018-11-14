@@ -21,8 +21,13 @@ void meanSquaredErrorDerivative(Tensor* ypred, Tensor* ytrue, Tensor* dest) {
     sub(ypred, ytrue, dest);
 }
 
-LossFunction* MeanSquaredError = &(LossFunction){
+bool meanSquaredErrorCorrect(Tensor* ypred, Tensor* ytrue) {
+    return argmax(ypred) == argmax(ytrue);
+}
+
+LossFunction MeanSquaredError = (LossFunction){
         .loss = meanSquaredError,
-        .lossDerivative = meanSquaredErrorDerivative
+        .lossDerivative = meanSquaredErrorDerivative,
+        .correct = meanSquaredErrorCorrect
 };
 

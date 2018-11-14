@@ -19,10 +19,10 @@ struct NeuralNet {
     Tensor** weights; // Array of pointers to tensors of length depth - 1 that stores the connection weights
     Tensor** biases; // Array of pointers to tensors of length depth - 1 that stores the biases for layer 2 onwards
 
-    LossFunction* lossFunction;
+    LossFunction lossFunction;
 };
 
-NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape, LossFunction* lossFunction);
+NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape, LossFunction lossFunction);
 
 void freeNeuralNet(NeuralNet* nn);
 
@@ -30,12 +30,20 @@ void randInit(NeuralNet* nn);
 
 void forwardPass(NeuralNet* nn);
 
-Tensor*** backProp(NeuralNet *nn, Tensor* yTrue);
+Tensor*** newWeightBiasUpdate(NeuralNet* nn);
 
-void batchTrain(NeuralNet *nn, Tensor** xy[], int batchSize, float lr);
+void scaleWeightBiasUpdate(NeuralNet* nn, Tensor*** wb, float scalar);
+
+void copyWeightBiasUpdate(NeuralNet* nn, Tensor*** src, Tensor*** dest);
+
+void addWeightBiasUpdate(NeuralNet* nn, Tensor*** a, Tensor*** b, Tensor*** c);
+
+void freeWeightBiasUpdate(NeuralNet* nn, Tensor*** wb);
+
+void backProp(NeuralNet *nn, Tensor*** wb, Tensor* yTrue);
 
 void applyBackProp(NeuralNet* nn, Tensor*** wb, float lr);
 
-void freeBackProp(NeuralNet* nn, Tensor*** wb);
+void batchTrain(NeuralNet *nn, Tensor** xy[], int batchSize, float lr);
 
 #endif //PROJECT_NEURALNET_H

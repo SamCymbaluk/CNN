@@ -63,6 +63,16 @@ Tensor* dupeTensor(Tensor* src) {
     return dest;
 }
 
+bool tensorEqual(Tensor* a, Tensor* b, float epsilon) {
+    if (!shapeMatches(a, b)) return false;
+
+    for (size_t i = 0; i < a->size; i++) {
+        if (fabsf(a->data[i] - b->data[i]) > epsilon) return false;
+    }
+
+    return true;
+}
+
 void randomize(Tensor* tensor, float min, float max) {
     for (size_t i = 0; i < tensor->size; i++) {
         tensor->data[i] = (float) (rand() / (RAND_MAX + 1.0)) * (max - min) + min;
@@ -252,6 +262,19 @@ Tensor* transpose(Tensor* a) {
         fprintf(stderr, "Shape of tensor for transpose is incompatible\n");
         exit(100);
     }
+}
+
+size_t argmax(Tensor* a) {
+    float max = a->data[0];
+    size_t maxIndex = 0;
+    for (size_t i = 1; i < a->size; i++) {
+        if (a->data[i] > max) {
+            max = a->data[i];
+            maxIndex = i;
+        }
+    }
+
+    return maxIndex;
 }
 
 void sigmoid(Tensor* a) {

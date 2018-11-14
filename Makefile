@@ -1,18 +1,24 @@
 CFLAGS = "-std=c99"
 
-all: boolean_demo mnist_demo
+all: xor_demo mnist_demo
 
-mnist_demo: mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o
-	gcc -o mnist_demo mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o -lm
+mnist_demo: mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o trainer.o optimizer.o
+	gcc -o mnist_demo mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o trainer.o optimizer.o -lm
 
 mnist_demo.o: mnist_demo.c
 	gcc $(CFLAGS) -c mnist_demo.c
 
-boolean_demo: boolean_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o
-	gcc -o boolean_demo boolean_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o -lm
+xor_demo: xor_demo.o tensor.o neuralnet.o functions.o loss_functions.o dataset.o trainer.o optimizer.o
+	gcc -o xor_demo xor_demo.o tensor.o neuralnet.o functions.o loss_functions.o dataset.o trainer.o optimizer.o -lm
 
-boolean_demo.o: boolean_demo.c
-	gcc $(CFLAGS) -c boolean_demo.c
+xor_demo.o: xor_demo.c
+	gcc $(CFLAGS) -c xor_demo.c
+
+trainer.o: trainer.c trainer.h optimizer.o neuralnet.o dataset.o
+	gcc $(CFLAGS) -c trainer.c
+
+optimizer.o: optimizer.c optimizer.h neuralnet.o tensor.o
+	gcc $(CFLAGS) -c optimizer.c
 
 neuralnet.o: neuralnet.c neuralnet.h loss_functions.o tensor.o
 	gcc $(CFLAGS) -c neuralnet.c

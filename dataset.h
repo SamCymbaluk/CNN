@@ -18,6 +18,8 @@ struct Dataset {
 
     size_t testElements;
     Datum (*getTestElement)(size_t);
+
+    void (*shuffle)();
 };
 
 typedef struct Dataset Dataset;
