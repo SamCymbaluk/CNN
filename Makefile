@@ -40,4 +40,4 @@ dataset.o: dataset.c dataset.h
 
 clean:
 	rm -rf *.o ||:
-	rm -rf boolean_demo test ||:
+	rm -rf xor_demo mnist_demo ||:

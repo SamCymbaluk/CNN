@@ -67,11 +67,11 @@ int main() {
         copyTensor(datum.x, nn->input);
         forwardPass(nn);
         printf("Input:           ");
-        printTensor(datum.x, false);
+        printTensor(datum.x);
         printf("Expected Output: ");
-        printTensor(datum.y, false);
+        printTensor(datum.y);
         printf("Network Output:  ");
-        printTensor(nn->output, false);
+        printTensor(nn->output);
         printf("Correct:         %s\n\n", MeanSquaredError.correct(datum.y, nn->output) ? "true" : "false");
 
     }

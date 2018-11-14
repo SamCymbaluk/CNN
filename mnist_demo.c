@@ -37,7 +37,7 @@ int main() {
         printf("Network prediction: %zu\n", argmax(nn->output));
         printf("Confidence: %f%%\n", 100*nn->output->data[argmax(nn->output)]);
         printf("Raw output: ");
-        printTensor(nn->output, false);
+        printTensor(nn->output);
     }
 }
 

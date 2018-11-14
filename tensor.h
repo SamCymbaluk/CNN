@@ -180,9 +180,8 @@ void softmax(Tensor* a);
 /**
  * Print the elements of a Tensor as a flattened array
  * @param tensor The Tensor to print
- * @param addrs Whether to include addresses of elements in the output
  */
-void printTensor(Tensor* tensor, bool addrs);
+void printTensor(Tensor* tensor);
 
 /**
  * Print the shape of a Tensor as a tuple of length 'rank'

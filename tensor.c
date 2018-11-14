@@ -296,18 +296,15 @@ void softmax(Tensor* a) {
 }
 
 
-void printTensor(Tensor* tensor, bool addrs) {
+void printTensor(Tensor* tensor) {
     size_t size = subtensorSize(tensor, tensor->rank);
 
     printf("[");
     int ele;
     for (ele = 0; ele < size - 1; ele++) {
-        if (addrs) printf("(");
         printf("%f, ", tensor->data[ele]);
-        if (addrs) printf("%p), ", (void *) &tensor->data[ele]);
     }
-    if (addrs) printf("(%f, %p)]\n", tensor->data[ele], (void *) &tensor->data[ele]);
-    else printf("%f]\n", tensor->data[ele]);
+    printf("%f]\n", tensor->data[ele]);
 }
 
 void printShape(Tensor* tensor) {
