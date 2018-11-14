@@ -24,6 +24,6 @@ int main() {
     randInit(nn);
     nn->train = true;
 
-    train(nn, SGD, mnist, 500, 50, 0.1, printEpochCallback);
+    train(nn, SGD, mnist, 20, 1, 0.1, printEpochCallback);
 }
 

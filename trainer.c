@@ -50,10 +50,6 @@ void train(NeuralNet* nn, Optimizer optimizer, Dataset dataset,
             // Perform back propagation to get Weights Bias update for a single training example
             backProp(nn, datumWBUpdate, datum.y);
 
-            // printTensor(datumWBUpdate[0][0], false);
-            //printTensor(datumWBUpdate[1][0], false);
-            //printf("\n");
-
             // Optimize on single data point
             optimizer.datumOptimize(nn, datumWBUpdate, learnRate);
 
@@ -71,6 +67,9 @@ void train(NeuralNet* nn, Optimizer optimizer, Dataset dataset,
                 optimizer.batchOptimize(nn, batchWBUpdate, learnRate);
                 scaleWeightBiasUpdate(nn, batchWBUpdate, 0);
             }
+
+            // Reset datumWBUpdate
+            scaleWeightBiasUpdate(nn, datumWBUpdate, 0);
         }
         // Take average WB update over epoch
         scaleWeightBiasUpdate(nn, epochWBUpdate, 1.0f / dataset.trainElements);

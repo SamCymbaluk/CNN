@@ -59,6 +59,6 @@ int main() {
         .shuffle = xorShuffle,
     };
 
-    train(nn, SGD, xorDataset, 20, 20, 0.1, printEpochCallback);
+    train(nn, SGD, xorDataset, 50, 4, 0.1, printEpochCallback);
 }
 

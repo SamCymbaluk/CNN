@@ -175,7 +175,6 @@ void backProp(NeuralNet* nn, Tensor*** wb, Tensor* yTrue) {
     freeTensor(at);
 
     for (int l = layers - 3; l >= 0; l--) {
-        //printf("------ LAYER %d ------\n", l);
         Tensor* z = dupeTensor(nn->zs[l + 1]);
         sigmoid_prime(z);
 
