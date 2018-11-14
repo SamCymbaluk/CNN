@@ -1,12 +1,6 @@
 #include <stdio.h>
 #include <time.h>
-#include "tensor.h"
-#include "neuralnet.h"
-#include "loss_functions.h"
-#include "dataset.h"
-#include "optimizer.h"
-#include "trainer.h"
-
+#include "cnn.h"
 
 Datum xorElements[4];
 

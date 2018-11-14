@@ -1,15 +1,20 @@
-CFLAGS = "-std=c99"
+CFLAGS = -std=c99 -fPIC -Wall
 
-all: xor_demo mnist_demo
+build: cnn.so
 
-mnist_demo: mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o trainer.o optimizer.o
-	gcc -o mnist_demo mnist_demo.o tensor.o neuralnet.o functions.o loss_functions.o mnist_dataset.o trainer.o optimizer.o -lm
+demos: xor_demo mnist_demo
+
+cnn.so: cnn.h tensor.o neuralnet.o functions.o loss_functions.o dataset.o mnist_dataset.o trainer.o optimizer.o
+	gcc -o cnn.so $? -shared
+
+mnist_demo: mnist_demo.o
+	gcc -o mnist_demo mnist_demo.o -L. -l:cnn.so -lm
 
 mnist_demo.o: mnist_demo.c
 	gcc $(CFLAGS) -c mnist_demo.c
 
-xor_demo: xor_demo.o tensor.o neuralnet.o functions.o loss_functions.o dataset.o trainer.o optimizer.o
-	gcc -o xor_demo xor_demo.o tensor.o neuralnet.o functions.o loss_functions.o dataset.o trainer.o optimizer.o -lm
+xor_demo: xor_demo.o
+	gcc -o xor_demo xor_demo.o -L. -l:cnn.so -lm
 
 xor_demo.o: xor_demo.c
 	gcc $(CFLAGS) -c xor_demo.c
@@ -39,5 +44,5 @@ dataset.o: dataset.c dataset.h
 	gcc $(CFLAGS) -c dataset.c
 
 clean:
-	rm -rf *.o ||:
+	rm -rf *.o *.so ||:
 	rm -rf xor_demo mnist_demo ||:
