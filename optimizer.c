@@ -12,7 +12,7 @@ void SGD_epochOptimize(NeuralNet* nn, Tensor*** wb, float lr) {
 
 }
 
-Optimizer SGD = (Optimizer){
+Optimizer SGD = {
     .datumOptimize = SGD_datumOptimize,
     .batchOptimize = SGD_batchOptimize,
     .epochOptimize = SGD_epochOptimize

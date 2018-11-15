@@ -25,7 +25,7 @@ bool meanSquaredErrorCorrect(Tensor* ypred, Tensor* ytrue) {
     return argmax(ypred) == argmax(ytrue);
 }
 
-LossFunction MeanSquaredError = (LossFunction){
+LossFunction MeanSquaredError = {
         .loss = meanSquaredError,
         .lossDerivative = meanSquaredErrorDerivative,
         .correct = meanSquaredErrorCorrect
