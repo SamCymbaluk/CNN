@@ -2,6 +2,10 @@ CFLAGS = -std=c99 -fPIC -Wall
 
 build: cnn.so
 
+install: cnn.so
+	cp cnn.so /usr/lib/cnn.so
+	ldconfig /usr/lib
+
 demos: xor_demo mnist_demo
 
 cnn.so: cnn.h tensor.o neuralnet.o functions.o loss_functions.o dataset.o mnist_dataset.o trainer.o optimizer.o

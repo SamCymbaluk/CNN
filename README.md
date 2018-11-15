@@ -6,8 +6,9 @@ C NeuralNets: A simple neural network library in C
 git clone https://github.com/SamCymbaluk/CNN.git
 cd CNN
 make build
+sudo make install
 ```
-This will create a `cnn.so` shared object file in the CNN directory beside the cnn.h header file.
+This will create a `cnn.so` shared object file in the CNN directory and copy it to /usr/lib to allow use by other programs.
 
 You can use this in your own C program like so:
 ```C
