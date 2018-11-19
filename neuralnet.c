@@ -73,6 +73,60 @@ void randInit(NeuralNet* nn) {
     }
 }
 
+void saveNeuralNetwork(NeuralNet* nn, char* fileName) {
+    FILE* file = fopen(fileName, "wb");
+
+    if (file) {
+
+        // Network details
+        fwrite(&(nn->depth), 4, 1, file);
+        fwrite(nn->shape, 4, nn->depth, file);
+
+        // Weights and biases
+        for (unsigned int i = 0; i < nn->depth - 1; i++) {
+            fwrite(nn->weights[i]->data, 4, nn->weights[i]->size, file);
+            fwrite(nn->biases[i]->data, 4, nn->biases[i]->size, file);
+        }
+
+        fclose(file);
+    } else {
+        fprintf(stderr, "Could not open file for saveNeuralNetwork");
+    }
+}
+
+void loadNeuralNetwork(NeuralNet* nn, char* fileName) {
+    FILE* file = fopen(fileName, "rb");
+
+    if (file) {
+
+        // Network details
+        unsigned int depth;
+        fread(&depth, 4, 1, file);
+        if (depth != nn->depth) {
+            fprintf(stderr, "NeuralNet depth does not match");
+            exit(100);
+        }
+        for (unsigned int i = 0; i < nn->depth; i++) {
+            unsigned int shape;
+            fread(&shape, 4, 1, file);
+            if (shape != nn->shape[i]) {
+                fprintf(stderr, "NeuralNet shape does not match");
+                exit(100);
+            }
+        }
+
+        // Weights and biases
+        for (unsigned int i = 0; i < nn->depth - 1; i++) {
+            fread(nn->weights[i]->data, sizeof(float), nn->weights[i]->size, file);
+            fread(nn->biases[i]->data, sizeof(float), nn->biases[i]->size, file);
+        }
+
+        fclose(file);
+    } else {
+        fprintf(stderr, "Could not open file for loadNeuralNetwork");
+    }
+}
+
 void forwardPass(NeuralNet* nn) {
     // A_n = sigmoid (W_n * A_(n - 1) + B_n)
     for (int n = 1; n < nn->depth; n++) {

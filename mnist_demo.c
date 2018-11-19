@@ -31,5 +31,10 @@ int main() {
         printf("Raw output: ");
         printTensor(nn->output);
     }
+
+    printf("\nSaving neural network...\n");
+    saveNeuralNetwork(nn, "mnist_demo_save.dat");
+    printf("Neural network saved\n");
+    freeNeuralNet(nn);
 }
 

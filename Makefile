@@ -11,10 +11,10 @@ demos: xor_demo mnist_demo
 cnn.so: cnn.h tensor.o neuralnet.o functions.o loss_functions.o dataset.o mnist_dataset.o trainer.o optimizer.o
 	gcc -o cnn.so $? -shared
 
-mnist_demo: mnist_demo.o
+mnist_demo: mnist_demo.o cnn.so
 	gcc -o mnist_demo mnist_demo.o -L. -l:cnn.so -lm
 
-mnist_demo.o: mnist_demo.c
+mnist_demo.o: mnist_demo.c cnn.so
 	gcc $(CFLAGS) -c mnist_demo.c
 
 xor_demo: xor_demo.o

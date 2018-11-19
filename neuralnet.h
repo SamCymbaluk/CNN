@@ -28,6 +28,29 @@ void freeNeuralNet(NeuralNet* nn);
 
 void randInit(NeuralNet* nn);
 
+/**
+ * Save Neural Network weights and biases to a binary file for loading later
+ * File schema:
+ * [offset] | [type]  | [desc]
+ * 0000       uint32    Network depth
+ * 0004       uint32    Shape of layer 1
+ * 0008       uint32    Shape of layer 2
+ * ...
+ * 00xx       uint32    Shape of layer n - 1
+ * 0xxx       float32   weights[0]
+ * ...
+ * 0xxx       float32   biases[0]
+ * ...
+ * xxxx       float32   weights[n - 1]
+ * ...
+ * xxxx       float32   biases[n - 1]
+ * @param nn
+ * @param fileName
+ */
+void saveNeuralNetwork(NeuralNet* nn, char* fileName);
+
+void loadNeuralNetwork(NeuralNet* nn, char* fileName);
+
 void forwardPass(NeuralNet* nn);
 
 Tensor*** newWeightBiasUpdate(NeuralNet* nn);
