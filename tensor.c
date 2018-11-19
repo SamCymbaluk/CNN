@@ -286,6 +286,8 @@ void sigmoid_prime(Tensor* a) {
 }
 
 void softmax(Tensor* a) {
+    if (a->size == 1) return;
+
     float expSum = 0;
     for (size_t i = 0; i < a->size; i++) {
         expSum += exp(a->data[i]);
