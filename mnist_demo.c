@@ -33,7 +33,7 @@ int main() {
     }
 
     printf("\nSaving neural network...\n");
-    saveNeuralNetwork(nn, "mnist_demo_save.dat");
+    saveNeuralNet(nn, "mnist_demo_save.dat");
     printf("Neural network saved\n");
     freeNeuralNet(nn);
 }

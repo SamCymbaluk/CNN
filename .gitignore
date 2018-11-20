@@ -3,7 +3,7 @@ cmake-build-debug
 CMakeLists.txt
 *.o
 *.so
-
+*.dat
 
 xor_demo
 mnist_demo

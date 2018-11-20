@@ -17,10 +17,10 @@ mnist_demo: mnist_demo.o cnn.so
 mnist_demo.o: mnist_demo.c cnn.so
 	gcc $(CFLAGS) -c mnist_demo.c
 
-xor_demo: xor_demo.o
+xor_demo: xor_demo.o cnn.so
 	gcc -o xor_demo xor_demo.o -L. -l:cnn.so -lm
 
-xor_demo.o: xor_demo.c
+xor_demo.o: xor_demo.c cnn.so
 	gcc $(CFLAGS) -c xor_demo.c
 
 trainer.o: trainer.c trainer.h optimizer.o neuralnet.o dataset.o

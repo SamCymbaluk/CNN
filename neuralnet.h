@@ -47,9 +47,9 @@ void randInit(NeuralNet* nn);
  * @param nn
  * @param fileName
  */
-void saveNeuralNetwork(NeuralNet* nn, char* fileName);
+void saveNeuralNet(NeuralNet* nn, char* fileName);
 
-void loadNeuralNetwork(NeuralNet* nn, char* fileName);
+void loadNeuralNet(NeuralNet* nn, char* fileName);
 
 void forwardPass(NeuralNet* nn);
 
