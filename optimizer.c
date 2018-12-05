@@ -1,14 +1,14 @@
 #include "optimizer.h"
 #include <stdio.h>
 
-void SGD_datumOptimize(NeuralNet* nn, Tensor*** wb, float lr) {
+void SGD_datumOptimize(NeuralNet* nn, NNWeightsBiases* wb, float lr) {
 }
 
-void SGD_batchOptimize(NeuralNet* nn, Tensor*** wb, float lr) {
+void SGD_batchOptimize(NeuralNet* nn, NNWeightsBiases* wb, float lr) {
     applyBackProp(nn, wb, lr);
 }
 
-void SGD_epochOptimize(NeuralNet* nn, Tensor*** wb, float lr) {
+void SGD_epochOptimize(NeuralNet* nn, NNWeightsBiases* wb, float lr) {
 
 }
 

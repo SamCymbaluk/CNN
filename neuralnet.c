@@ -74,7 +74,7 @@ void randInit(NeuralNet* nn) {
 }
 
 void saveNeuralNet(NeuralNet* nn, char* fileName) {
-    FILE* file = fopen(fileName, "wb");
+    FILE *file = fopen(fileName, "wb");
 
     if (file) {
 
@@ -149,10 +149,10 @@ void forwardPass(NeuralNet* nn) {
     }
 }
 
-Tensor*** newWeightBiasUpdate(NeuralNet* nn) {
+NNWeightsBiases* newWeightBiasUpdate(NeuralNet* nn) {
     unsigned int layers = nn->depth;
 
-    Tensor*** wb = calloc(2, sizeof(Tensor**));
+    NNWeightsBiases* wb = calloc(2, sizeof(Tensor**));
 
     wb[0] = calloc(layers - 1, sizeof(Tensor*));
     wb[1] = calloc(layers - 1, sizeof(Tensor*));
@@ -173,28 +173,28 @@ Tensor*** newWeightBiasUpdate(NeuralNet* nn) {
     return wb;
 }
 
-void scaleWeightBiasUpdate(NeuralNet* nn, Tensor*** wb, float scalar) {
+void scaleWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* wb, float scalar) {
     for (int i = 0; i < nn->depth - 1; i++) {
         scalarmult(wb[0][i], scalar);
         scalarmult(wb[1][i], scalar);
     }
 }
 
-void copyWeightBiasUpdate(NeuralNet* nn, Tensor*** src, Tensor*** dest) {
+void copyWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* src, NNWeightsBiases* dest) {
     for (int i = 0; i < nn->depth - 1; i++) {
         copyTensor(src[0][i], dest[0][i]);
         copyTensor(src[1][i], dest[1][i]);
     }
 }
 
-void addWeightBiasUpdate(NeuralNet* nn, Tensor*** a, Tensor*** b, Tensor*** c) {
+void addWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* a, NNWeightsBiases* b, NNWeightsBiases* c) {
     for (int i = 0; i < nn->depth - 1; i++) {
         add(a[0][i], b[0][i], c[0][i]);
         add(a[1][i], b[1][i], c[1][i]);
     }
 }
 
-void freeWeightBiasUpdate(NeuralNet* nn, Tensor*** wb) {
+void freeWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* wb) {
     for (int i = 0; i < nn->depth - 1; i++) {
         freeTensor(wb[0][i]);
         freeTensor(wb[1][i]);
@@ -203,7 +203,7 @@ void freeWeightBiasUpdate(NeuralNet* nn, Tensor*** wb) {
     free(wb);
 }
 
-void backProp(NeuralNet* nn, Tensor*** wb, Tensor* yTrue) {
+void backProp(NeuralNet* nn, NNWeightsBiases* wb, Tensor* yTrue) {
     unsigned int layers = nn->depth;
 
     Tensor** wDeltas = wb[0];
@@ -246,7 +246,7 @@ void backProp(NeuralNet* nn, Tensor*** wb, Tensor* yTrue) {
     }
 }
 
-void applyBackProp(NeuralNet* nn, Tensor*** wb, float lr) {
+void applyBackProp(NeuralNet* nn, NNWeightsBiases* wb, float lr) {
 
     for (int i = 0; i < nn->depth - 1; i++) {
         scalarmult(wb[0][i], -lr); // Scale weight shifts by learning rate

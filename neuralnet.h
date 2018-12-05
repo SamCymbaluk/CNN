@@ -22,6 +22,8 @@ struct NeuralNet {
     LossFunction lossFunction;
 };
 
+typedef Tensor** NNWeightsBiases;
+
 NeuralNet* newNeuralNet(unsigned int depth, unsigned int* shape, LossFunction lossFunction);
 
 void freeNeuralNet(NeuralNet* nn);
@@ -53,20 +55,18 @@ void loadNeuralNet(NeuralNet* nn, char* fileName);
 
 void forwardPass(NeuralNet* nn);
 
-Tensor*** newWeightBiasUpdate(NeuralNet* nn);
+NNWeightsBiases* newWeightBiasUpdate(NeuralNet* nn);
 
-void scaleWeightBiasUpdate(NeuralNet* nn, Tensor*** wb, float scalar);
+void scaleWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* wb, float scalar);
 
-void copyWeightBiasUpdate(NeuralNet* nn, Tensor*** src, Tensor*** dest);
+void copyWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* src, NNWeightsBiases* dest);
 
-void addWeightBiasUpdate(NeuralNet* nn, Tensor*** a, Tensor*** b, Tensor*** c);
+void addWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* a, NNWeightsBiases* b, NNWeightsBiases* c);
 
-void freeWeightBiasUpdate(NeuralNet* nn, Tensor*** wb);
+void freeWeightBiasUpdate(NeuralNet* nn, NNWeightsBiases* wb);
 
-void backProp(NeuralNet *nn, Tensor*** wb, Tensor* yTrue);
+void backProp(NeuralNet *nn, NNWeightsBiases* wb, Tensor* yTrue);
 
-void applyBackProp(NeuralNet* nn, Tensor*** wb, float lr);
-
-void batchTrain(NeuralNet *nn, Tensor** xy[], int batchSize, float lr);
+void applyBackProp(NeuralNet* nn, NNWeightsBiases* wb, float lr);
 
 #endif //PROJECT_NEURALNET_H

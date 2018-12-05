@@ -29,9 +29,9 @@ TrainingInfo postEpochBenchmarks(NeuralNet* nn, Dataset dataset, size_t epochInd
 void train(NeuralNet* nn, Optimizer optimizer, Dataset dataset,
         size_t epochs, unsigned int batchSize, float learnRate, void (*epochCallback)(TrainingInfo)) {
 
-    Tensor*** datumWBUpdate = newWeightBiasUpdate(nn);
-    Tensor*** batchWBUpdate = newWeightBiasUpdate(nn);
-    Tensor*** epochWBUpdate = newWeightBiasUpdate(nn);
+    NNWeightsBiases* datumWBUpdate = newWeightBiasUpdate(nn);
+    NNWeightsBiases* batchWBUpdate = newWeightBiasUpdate(nn);
+    NNWeightsBiases* epochWBUpdate = newWeightBiasUpdate(nn);
 
     Datum datum;
 
