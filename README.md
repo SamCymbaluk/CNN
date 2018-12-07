@@ -1,6 +1,14 @@
 # CNN
 C NeuralNets: A simple neural network library in C
 
+Developed as part of my final project for PHYSICS 2G03 at McMaster.
+Currently being prepared for full release.
+
+### Release roadmap
+- [ ] Convert to C++
+- [ ] Remove small memory leaks
+- [ ] Create user documentation
+
 ### Installation
 ```bash
 git clone https://github.com/SamCymbaluk/CNN.git
